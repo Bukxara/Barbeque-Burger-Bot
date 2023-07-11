@@ -10,3 +10,4 @@ ADMINS = env.list("ADMINS")  # List of ADMINs
 # IP = env.str("ip")  # Host IP-address
 MY_TOKEN = env.str("MY_TOKEN")
 URL = env.str("URL")
+URL_FOR_IMAGES = env.str("URL_FOR_IMAGES")

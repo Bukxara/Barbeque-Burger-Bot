@@ -14,7 +14,7 @@ from app import user_data
 from api import (put_number, post_address, category_by_name, get_product_by_name, purchase_product, empty_cart, 
                  check_address, update_product_quantity, delete_product, post_order, last_order, leave_comment, 
                  get_orders_of_user, put_birthday, get_addresses, get_or_create_customer)
-from data.config import URL_FOR_IMAGE
+from data.config import URL_FOR_IMAGES
 import re
 
 
@@ -177,7 +177,7 @@ async def quantity_view(message: types.Message, state: FSMContext):
         text = result["text"]
 
         await message.answer("Выберите количество продукта", reply_markup=product_button)
-        await message.answer_photo(photo=f'{URL_FOR_IMAGE}{product["product_image"]}',
+        await message.answer_photo(photo=f'{URL_FOR_IMAGES}{product["product_image"]}',
                                    caption=text, parse_mode="Markdown", reply_markup=markup)
         user_data[message.from_user.id]["num"] = 1
         await state.set_state(Stages.quantity)
