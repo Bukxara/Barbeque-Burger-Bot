@@ -177,7 +177,7 @@ async def quantity_view(message: types.Message, state: FSMContext):
         text = result["text"]
 
         await message.answer("Выберите количество продукта", reply_markup=product_button)
-        await message.answer_photo(photo=open(f'{product["product_image"][1:]}', "rb"),
+        await message.answer_photo(photo=f'{URL}{product["product_image"]}',
                                    caption=text, parse_mode="Markdown", reply_markup=markup)
         user_data[message.from_user.id]["num"] = 1
         await state.set_state(Stages.quantity)
