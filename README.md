@@ -1,7 +1,6 @@
-# aiogram-bot-sample
-Sample for creating Telgram Bot using aiogram library
-
-Fast-food delivery telegram bot with different options
+Fast-food delivery telegram bot with many functionalities
 Almost identical with Barbeque Bot (BBQ) https://t.me/barbeque_bot
 
-Has admin panel, has dashboard, actually it is a part of CRM Model created using Django
+For ordering please go to https://t.me/BarbequeDemoBot
+
+Has admin panel, has dashboard, actually it is a part of CRM Model which is another repository namely "Django-CRM"
