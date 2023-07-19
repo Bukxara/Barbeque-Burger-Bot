@@ -163,12 +163,12 @@ async def post_order(telegram_id, products, method, address, comment, order_sum,
         http = f"{url}/orders/"
         async with session.post(http, data={
             "customer": telegram_id,
-            "order_items": products,
+            "items": products,
             "payment_method": method,
-            "order_address": address,
-            "order_comment": comment,
-            "order_sum": order_sum,
-            "order_status": status
+            "address": address,
+            "comment": comment,
+            "sum": order_sum,
+            "status": status
         }, headers=head):
             return "Успешно заказано!"
 

@@ -344,10 +344,10 @@ async def comment_stage(message: types.Message, state: FSMContext):
     if message.text != "Пропустить":
         await state.update_data(comment=message.text)
         await post_order(message.from_user.id, result["product_items"], data["payment_method"], 
-                         data["address_text"], message.text, result["total_price"]+10000, "In progress")
+                         data["address_text"], message.text, result["total_price"]+10000, "Pending")
     else:
         await post_order(message.from_user.id, result["product_items"], data["payment_method"], 
-                         data["address_text"], "", result["total_price"]+10000, "In progress")
+                         data["address_text"], "", result["total_price"]+10000, "Pending")
     
     await empty_cart(message.from_user.id)
     order = await last_order()
