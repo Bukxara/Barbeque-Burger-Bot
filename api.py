@@ -253,3 +253,4 @@ async def post_address(telegram_id, coordinates, address_text):
             "address_text": address_text
         }, headers=head):
             return "Добавлено!"
+

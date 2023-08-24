@@ -17,19 +17,19 @@ async def locations_button(telegram_id):
 start = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="🛍 Заказать")
+            KeyboardButton(text="🍴 Menyu")
         ],
         [
-            KeyboardButton(text="🎉 Акция"),
-            KeyboardButton(text="✍️ Оставить отзыв")
+            KeyboardButton(text="🎉 Aksiya"),
+            KeyboardButton(text="✍️ Sharh qoldirish")
         ],
         [
-            KeyboardButton(text="🏘 Филиалы"),
-            KeyboardButton(text="📋 Мои заказы")
+            KeyboardButton(text="🏘 Bizning filiallarimiz"),
+            KeyboardButton(text="📋 Mening buyurtmalarim")
         ],
         [
-            KeyboardButton(text="ℹ️ О нас"),
-            KeyboardButton(text="⚙️ Настройки")
+            KeyboardButton(text="ℹ️ Biz haqimizda"),
+            KeyboardButton(text="⚙️ Sozlamalar")
         ],
     ], resize_keyboard=True
 )
@@ -40,8 +40,8 @@ async def categories_button():
 
     button = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     categories = await all_categories()
-    button.insert(KeyboardButton(text="⬅️ Назад"))
-    button.insert(KeyboardButton(text="📥 Корзина"))
+    button.insert(KeyboardButton(text="⬅️ Orqaga"))
+    button.insert(KeyboardButton(text="🛒 Savat"))
 
     for category in categories:
         button.insert(KeyboardButton(text=category["category_name"]))
@@ -54,8 +54,8 @@ async def products_by_category(category_name):
 
     button = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
-    button.insert(KeyboardButton(text="⬅️ Назад"))
-    button.insert(KeyboardButton(text="📥 Корзина"))
+    button.insert(KeyboardButton(text="⬅️ Orqaga"))
+    button.insert(KeyboardButton(text="🛒 Savat"))
     
     
     products = await products_by_category_name(category_name)
@@ -69,8 +69,8 @@ async def products_by_category(category_name):
 product_button = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="⬅️ Назад"),
-            KeyboardButton(text="📥 Корзина")
+            KeyboardButton(text="⬅️ Orqaga"),
+            KeyboardButton(text="🛒 Savat")
         ]
     ], resize_keyboard=True
 )
@@ -79,7 +79,7 @@ product_button = ReplyKeyboardMarkup(
 back = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="⬅️ Назад")
+            KeyboardButton(text="⬅️ Orqaga")
         ]
     ], resize_keyboard=True
 )
@@ -88,7 +88,7 @@ back = ReplyKeyboardMarkup(
 contact = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="📱 Мой номер", request_contact=True)
+            KeyboardButton(text="📱 Mening raqamim", request_contact=True)
         ]
     ], resize_keyboard=True
 )
@@ -96,13 +96,13 @@ contact = ReplyKeyboardMarkup(
 location_options = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="🌍 Отправить мою геопозицию", request_location=True)
+            KeyboardButton(text="🌍 Joylashuvni yuborish", request_location=True)
         ],
         [
-            KeyboardButton(text="🏠  Мои адреса")
+            KeyboardButton(text="🏠 Mening manzillarim")
         ],
         [
-            KeyboardButton(text="⬅️ Назад")
+            KeyboardButton(text="⬅️ Orqaga")
         ],
     ], resize_keyboard=True
 )
@@ -111,12 +111,12 @@ location_options = ReplyKeyboardMarkup(
 address_confirmation = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="🌍 Переотправить геопозицию", request_location=True),
-            KeyboardButton(text="✅ Подтвердить")
+            KeyboardButton(text="🌍 Joylashuvni qayta yuborish", request_location=True),
+            KeyboardButton(text="✅ Tasdiqlash")
         ],
         [
-            KeyboardButton(text="Добавить в мои адреса"),
-            KeyboardButton(text="⬅️ Назад")
+            KeyboardButton(text="Mening manzillarimga qo'shing"),
+            KeyboardButton(text="⬅️ Orqaga")
         ],
     ], resize_keyboard=True
 )
@@ -125,7 +125,7 @@ address_confirmation = ReplyKeyboardMarkup(
 skip = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Пропустить")
+            KeyboardButton(text="Oʻtkazib yuborish")
         ]
     ], resize_keyboard=True
 )
@@ -134,7 +134,7 @@ skip = ReplyKeyboardMarkup(
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Главное меню")
+            KeyboardButton(text="Asosiy menyu")
         ]
     ], resize_keyboard=True
 )
@@ -143,16 +143,16 @@ main_menu = ReplyKeyboardMarkup(
 branches = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="⬅️ Назад"),
-            KeyboardButton(text="BBQ Compas"),
+            KeyboardButton(text="⬅️ Orqaga"),
+            KeyboardButton(text="Non kabob Compas"),
         ],
         [
-            KeyboardButton(text="BBQ Parus"),
-            KeyboardButton(text="BBQ Chimgan"),
+            KeyboardButton(text="Non kabob Parus"),
+            KeyboardButton(text="Non kabob Chimgan"),
         ],
         [
-            KeyboardButton(text="BBQ Samarqand Darvoza"),
-            KeyboardButton(text="BBQ Minor"),
+            KeyboardButton(text="Non kabob Samarqand Darvoza"),
+            KeyboardButton(text="Non kabob Minor"),
         ],
     ], resize_keyboard=True
 )
@@ -161,8 +161,8 @@ branches = ReplyKeyboardMarkup(
 settings = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Добавить день рождения"),
-            KeyboardButton(text="⬅️ Назад"),
+            KeyboardButton(text="Tug'ilgan kunni qo'shing"),
+            KeyboardButton(text="⬅️ Orqaga"),
         ]
     ], resize_keyboard=True
 )

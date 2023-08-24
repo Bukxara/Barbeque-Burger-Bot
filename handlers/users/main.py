@@ -18,32 +18,32 @@ from data.config import URL_FOR_IMAGES
 import re
 
 
-@dp.message_handler(text="📥 Корзина", state="*")
+@dp.message_handler(text="🛒 Savat", state="*")
 async def cart(message: types.Message, state: FSMContext):
     # Cart of a user
 
     result = await cart_button(message.from_user.id)
 
     if result['is_empty']:
-        await message.answer(text="Ваша корзина пусто!")
+        await message.answer(text="Savatingiz boʻsh! ")
         markup = await categories_button()
-        await message.answer("Выберите категорию", reply_markup=markup)
+        await message.answer("Kategoriyani tanlang ", reply_markup=markup)
         await state.set_state(Stages.category)
     else:
-        await message.answer(text="Корзина", reply_markup=back)
+        await message.answer(text="🛒Savat", reply_markup=back)
         await message.answer(text=f"{result['cart_text']}\n{result['price_text']}",
                              reply_markup=result["button"], parse_mode="Markdown")
         await state.set_state(Stages.cart)
 
 
-@dp.message_handler(text="⬅️ Назад", state="*")
+@dp.message_handler(text="⬅️ Orqaga", state="*")
 async def back_button_handler(message: types.Message, state: FSMContext):
     # Handling all the "⬅️ Назад" buttons
 
     current_state = await state.get_state()
     if current_state in [*Others.all_states_names, "Customer:location"]:
         await state.set_state(None)
-        await message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов", reply_markup=start)
+        await message.answer("Buyurtma berish uchun  🍴Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin  ", reply_markup=start)
     
     elif current_state in ["Stages:product", "Stages:cart", *Order.all_states_names]:
         markup = await categories_button()
@@ -53,17 +53,17 @@ async def back_button_handler(message: types.Message, state: FSMContext):
     elif current_state == "Stages:quantity":
         data = await state.get_data()
         markup = await products_by_category(data["category"])
-        await message.answer(f"{data['category']}\n\nВыберите продукт",
+        await message.answer(f"{data['category']}\n\nMahsulotni tanlang ",
                              reply_markup=markup)
         user_data[message.from_user.id]["num"] = 1
         await state.set_state(Stages.product)
 
     elif current_state in ["Stages:category", "Customer:customers_addresses", "Customer:address_confirmation", "Customer:customers_addresses"]:
-        await message.answer("Чтобы продолжить заказ, пожалуйста выберите один из опций", reply_markup=location_options)
+        await message.answer("Buyurtmani davom ettirish uchun variantlardan birini tanlang ", reply_markup=location_options)
         await state.set_state(Customer.location)
 
     elif current_state == None:
-        await message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов", reply_markup=start)
+        await message.answer("Buyurtma berish uchun 🍴 Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin. ", reply_markup=start)
 
 
 
@@ -72,33 +72,33 @@ async def number_handler(message: types.Message, state: FSMContext):
     # Updating user's phone number
 
     await put_number(message.from_user.id, message.contact.phone_number)
-    await message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов", reply_markup=start)
+    await message.answer("Buyurtma berish uchun 🍴 Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin. ", reply_markup=start)
     await state.finish()
 
 
-@dp.message_handler(text="🛍 Заказать", state="*")
+@dp.message_handler(text="🍴 Menyu", state="*")
 async def categories_view(message: types.Message, state: FSMContext):
     # Location markup view and setting state to the location
 
     user_data[message.from_user.id] = {}
     user_data[message.from_user.id].update(dict.fromkeys(["Напитки", "Снеки", "Kids Box"], ""))
-    await message.answer("Чтобы продолжить заказ, пожалуйста выберите один из опций", reply_markup=location_options)
+    await message.answer("Buyurtmani davom ettirish uchun variantlardan birini tanlang ", reply_markup=location_options)
     await state.set_state(Customer.location)
 
 @dp.message_handler(state=Customer.location)
 async def location_handler(message: types.Message, state: FSMContext):
     # Providing user with 2 options
     
-    if message.text == "🏠  Мои адреса":
+    if message.text == "🏠 Mening manzillarim":
         result = await locations_button(message.from_user.id)
         if result["is_empty"]:
-            await message.answer("У вас ещё нет сохранённого адреса", reply_markup=result["button"])
+            await message.answer("Sizda hali saqlangan manzil yo‘q ", reply_markup=result["button"])
         else:
-            await message.answer("Выберите адрес", reply_markup=result["button"])
+            await message.answer("Manzilni tanlang📍", reply_markup=result["button"])
         await state.set_state(Customer.customers_addresses)
 
     else:
-        return await message.reply("Пожалуйста выберите один из опций!")
+        return await message.reply("Iltimos, variantlardan birini tanlang! ")
     
 
 @dp.message_handler(content_types="location", state=[Customer.location, Customer.address_confirmation])
@@ -107,7 +107,7 @@ async def location_sending(message: types.Message, state: FSMContext):
     
     address = await check_address(message.location)
     await state.update_data(address_coordinates=address["coordinates"], address_text=address["address"])
-    await message.answer(f'Ваш адрес:\n📍 *{address["address"]}*\nПодтвердите адрес?', parse_mode="Markdown", reply_markup=address_confirmation)
+    await message.answer(f'Sizning manzilingiz :\n📍 *{address["address"]}*\nManzilni tasdiqlang ?', parse_mode="Markdown", reply_markup=address_confirmation)
     await state.set_state(Customer.address_confirmation)
 
 
@@ -115,24 +115,24 @@ async def location_sending(message: types.Message, state: FSMContext):
 async def final_stage_location(message: types.Message, state: FSMContext):
     # Final stage of location sending
     
-    if message.text == "✅ Подтвердить":
+    if message.text == "✅ Tasdiqlash":
         markup = await categories_button()
-        await message.answer("Выберите категорию", reply_markup=markup)
+        await message.answer("Kategoriyani tanlang ", reply_markup=markup)
         await state.set_state(Stages.category)
     
-    elif message.text == "Добавить в мои адреса":
+    elif message.text == "Mening manzillarimga qo'shing":
         data = await state.get_data()
         users_addresses = await get_addresses(message.from_user.id)
 
         if data["address_text"] in [address["address_text"] for address in users_addresses]:
-            return await message.answer("Вы уже добавили этот адрес")
+            return await message.answer("Siz allaqachon bu manzilni qo'shgansiz ")
         
         await post_address(message.from_user.id, data["address_coordinates"], data["address_text"])
-        await message.answer("Ваша геопозиция успешно добавлена. Выберите один из опций", reply_markup=location_options)
+        await message.answer("Joylashuvingiz muvaffaqiyatli kiritildi. Variantlardan birini tanlang ", reply_markup=location_options)
         await state.set_state(Customer.location)
 
     else:
-        return await message.reply("Пожалуйста выберите один из опций!")
+        return await message.reply("Iltimos, variantlardan birini tanlang! ")
 
 
 @dp.message_handler(state=Customer.customers_addresses)
@@ -141,13 +141,15 @@ async def location_choice(message: types.Message, state: FSMContext):
     
     addresses = await get_addresses(message.from_user.id)
     if message.text not in [address["address_text"] for address in addresses]:
-        return await message.answer("Выберите адрес")
-    
+        return await message.answer("Manzilni tanlang ")
+    for address in addresses:
+        if message.text == address["address_text"]:
+            await state.update_data(address_coordinates=address["address_coordinates"])
     await state.update_data(address_text=message.text)
     markup = await categories_button()
-    await message.answer("Выберите категорию", reply_markup=markup)
+    await message.answer("Kategoriyani tanlang ", reply_markup=markup)
     await state.set_state(Stages.category)
-    
+
 
 @dp.message_handler(state=Stages.category)
 async def products_view(message: types.Message, state: FSMContext):
@@ -157,11 +159,12 @@ async def products_view(message: types.Message, state: FSMContext):
     if data:
         await state.update_data(category=message.text)
         markup = await products_by_category(message.text)
-        await message.answer(f"{message.text}\n\nВыберите продукт",
+        await message.answer_photo(photo=f"{URL_FOR_IMAGES}{data[0]['category_image']}",
+                                   caption=f"{message.text}\n\nMahsulotni tanlang ",
                              reply_markup=markup)
         await state.set_state(Stages.product)
     else:
-        return await message.reply("Пожалуйста, выберите один из приведённых категорий!")
+        return await message.reply("Quyidagi toifalardan birini tanlang! ")
 
 
 @dp.message_handler(state=Stages.product)
@@ -176,13 +179,13 @@ async def quantity_view(message: types.Message, state: FSMContext):
         markup = result["button"]
         text = result["text"]
 
-        await message.answer("Выберите количество продукта", reply_markup=product_button)
+        await message.answer("Mahsulot miqdorini tanlang ", reply_markup=product_button)
         await message.answer_photo(photo=f'{URL_FOR_IMAGES}{product["product_image"]}',
                                    caption=text, parse_mode="Markdown", reply_markup=markup)
         user_data[message.from_user.id]["num"] = 1
         await state.set_state(Stages.quantity)
     else:
-        return await message.reply("Пожалуйста, выберите один из приведённых продуктов!")
+        return await message.reply("Quyidagi mahsulotlardan birini tanlang! ")
 
 
 async def update_num_text(message: types.Message, product_name, new_value: int):
@@ -206,19 +209,19 @@ async def nums_callback(call: types.CallbackQuery, state: FSMContext):
 
     if action == "incr":
         user_data[call.from_user.id]["num"] = user_value + 1
-        await call.answer(f"{user_value + 1} шт.")
+        await call.answer(f"{user_value + 1} ta.")
         await update_num_text(call.message, product_name, user_value + 1)
 
     elif action == "decr":
         if user_value > 1:
             user_data[call.from_user.id]["num"] = user_value - 1
-            await call.answer(f"{user_value - 1} шт.")
+            await call.answer(f"{user_value - 1} ta.")
             await update_num_text(call.message, product_name, user_value - 1)
         else:
-            await call.answer(f"{user_value} шт.")
+            await call.answer(f"{user_value} ta.")
 
     elif action == "num":
-        await call.answer(f"{user_value} шт.")
+        await call.answer(f"{user_value} ta.")
 
     elif action in ["sprite", "coca-cola", "fanta"]:
         user_data[call.from_user.id]["Напитки"] = product_options.get(
@@ -246,7 +249,7 @@ async def nums_callback(call: types.CallbackQuery, state: FSMContext):
             markup = await categories_button()
             await call.answer(result)
             await call.message.delete()
-            await call.message.answer("Выберите категорию", reply_markup=markup)
+            await call.message.answer("Kategoriyani tanlang", reply_markup=markup)
             
             user_data[call.from_user.id]["Напитки"], user_data[call.from_user.id][
                 "Снеки"], user_data[call.from_user.id]["Kids Box"] = "", "", ""
@@ -266,7 +269,7 @@ async def carts_callback(call: types.CallbackQuery, state: FSMContext):
             await call.answer(result)
             await call.message.delete()
         markup = await categories_button()
-        await call.message.answer("Выберите категорию", reply_markup=markup)
+        await call.message.answer("Kategoriyani tanlang ", reply_markup=markup)
         await state.set_state(Stages.category)
 
     elif action in ["incr", "decr"]:
@@ -284,20 +287,20 @@ async def carts_callback(call: types.CallbackQuery, state: FSMContext):
         result = await cart_button(call.from_user.id)
 
         if result['is_empty']:
-            await call.message.answer(text="Ваша корзина пусто!")
+            await call.message.answer(text="Savatingiz boʻsh!")
             await call.message.delete()
             markup = await categories_button()
-            await call.message.answer("Выберите категорию", reply_markup=markup)
+            await call.message.answer("Kategoriyani tanlang", reply_markup=markup)
             await state.set_state(Stages.category)
         else:
             await call.message.edit_text(f"{result['cart_text']}\n{result['price_text']}", parse_mode="Markdown", reply_markup=result["button"])
 
     elif action == "confirm":
         result = await cart_button(call.from_user.id)
-        await state.update_data(text=f"{result['cart_text']}\n\n*Сумма доставки:* 10,000\n*Итого:* {result['total_price']+10000:,} UZS")
+        await state.update_data(text=f"{result['cart_text']}\n\n*Yetkazib berish miqdori :* 10,000\n*Jami :* {result['total_price']+10000:,} UZS")
         await call.message.delete()
         data = await state.get_data()
-        await call.message.answer(f"{data['text']}\n*Геолокация:* {data['address_text']}", parse_mode="Markdown", reply_markup=payment_method)
+        await call.message.answer(f"{data['text']}\n*Geolokatsiya :* {data['address_text']}", parse_mode="Markdown", reply_markup=payment_method)
         await state.set_state(Order.payment_method)
 
 
@@ -308,7 +311,7 @@ async def methods_callback(call: types.CallbackQuery, state: FSMContext):
     method = call.data.split("_")[1]
     data = await state.get_data()
     await state.update_data(payment_method=method.capitalize())
-    await call.message.edit_text(f"{data['text']}\n*Геолокация:* {data['address_text']}\n*Тип оплаты:* 💳{method.capitalize()}", parse_mode="Markdown", reply_markup=confirmation)
+    await call.message.edit_text(f"{data['text']}\n*Geolokatsiya :* {data['address_text']}\n*To'lov turi:* 💳{method.capitalize()}", parse_mode="Markdown", reply_markup=confirmation)
     await state.set_state(Order.confirmation)
 
 
@@ -325,12 +328,12 @@ async def confirmations_callback(call: types.CallbackQuery, state: FSMContext):
     
     elif confirmation == "cancel":
         await empty_cart(call.from_user.id)
-        await call.message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов", reply_markup=start)
+        await call.message.answer("Buyurtma berish uchun 🍴Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin. ", reply_markup=start)
         await state.finish()
     
     elif confirmation == "confirm":
-        await state.update_data(text = data["text"] + f"\n*Тип оплаты:* {data['payment_method']}")
-        await call.message.answer("Оставьте комментарий к заказу.", reply_markup=skip)
+        await state.update_data(text = data["text"] + f"\n*To'lov turi :* {data['payment_method']}")
+        await call.message.answer("Buyurtma haqida fikringizni qoldiring .", reply_markup=skip)
         await state.set_state(Order.comment)
 
 
@@ -341,7 +344,7 @@ async def comment_stage(message: types.Message, state: FSMContext):
     data = await state.get_data()
     result = await cart_button(message.from_user.id)
 
-    if message.text != "Пропустить":
+    if message.text != "Oʻtkazib yuborish":
         await state.update_data(comment=message.text)
         await post_order(message.from_user.id, result["product_items"], data["payment_method"], 
                          data["address_text"], message.text, result["total_price"]+10000, "Pending")
@@ -352,43 +355,44 @@ async def comment_stage(message: types.Message, state: FSMContext):
     await empty_cart(message.from_user.id)
     order = await last_order()
     await message.answer(data["text"], parse_mode="Markdown")
-    await message.answer(f"Ваш заказ #{order[0]['id']}. Спасибо! Для подтверждения заказа в скором времени с Вами свяжется оператор.", reply_markup=main_menu)
+    await message.answer(f"Sizning buyurtmangiz  #{order[0]['id']}. Rahmat! Tez orada operator buyurtmangizni tasdiqlash uchun siz bilan bog'lanadi.", reply_markup=main_menu)
     await state.finish()
     customer = await get_or_create_customer(message.from_user.first_name, message.from_user.username, message.from_user.id)
 
     for admin in ADMINS:
-        await dp.bot.send_message(admin, f"""Новый заказ: *№ {order[0]['id']}*
-Статус: *Новый*
-Имя: *{message.from_user.first_name}*\n
-*Номер:* {customer['phone_number']}\n
+        await dp.bot.send_message(admin, f"""Yangi buyurtma: *№ {order[0]['id']}*
+Holat: *Yangi*
+Ismi: *{message.from_user.first_name}*\n
+*Telefon nomeri:* {customer['phone_number']}\n
 {result['cart_text']}\n
-Тип оплаты: *{data['payment_method']}*\n
-Локация: {data['address_text']}
-Итого: *{result['total_price']+10000:,} UZS*
-Комментарий: *{message.text}*""", parse_mode="Markdown")
+To'lov turi: *{data['payment_method']}*\n
+Manzil: {data['address_text']}
+Jami: *{result['total_price']+10000:,} UZS*
+Izoh: *{message.text}*""", parse_mode="Markdown")
+        await dp.bot.send_location(admin, latitude=data["address_coordinates"]["latitude"], longitude=data["address_coordinates"]["longitude"])
 
 
-@dp.message_handler(text="Главное меню", state="*")
+@dp.message_handler(text="Asosiy menyu", state="*")
 async def afterorder(message: types.Message):
     # Getting back to main menu after order
 
-    await message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов", reply_markup=start)
+    await message.answer("Buyurtma berish uchun 🍴Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin. ", reply_markup=start)
 
 
-@dp.message_handler(text="🎉 Акция", state="*")
+@dp.message_handler(text="🎉 Aksiya", state="*")
 async def discount_info(message: types.Message, state: FSMContext):
     # Giving discount information to the client
 
-    await message.answer_photo(photo=open("media/images/discount.jpg", "rb"), 
-        caption="SET 500+\nПраздничные мини сеты 🔥\nSet 500+ с напитком объемом 0,5л на выбор 20,21,22", reply_markup=back)
+    #await message.answer_photo(photo=open("media/images/discount.jpg", "rb"), caption="blah-blah") 
+    await message.answer("Hozirda aksiyalar mavjud emas.", reply_markup=back)
     await state.set_state(Others.discount)
 
 
-@dp.message_handler(text="✍️ Оставить отзыв", state="*")
+@dp.message_handler(text="✍️ Sharh qoldirish", state="*")
 async def asking_for_comment(message: types.Message, state: FSMContext):
     # as soon as leave a comment button is selected
 
-    await message.answer("Оставьте свой отзыв. Нам важно ваше мнение.", reply_markup=back)
+    await message.answer("Fikringizni qoldiring. Sizning fikringiz biz uchun muhim. ", reply_markup=back)
     await state.set_state(Others.comment)
 
 
@@ -397,20 +401,20 @@ async def taking_comment(message: types.Message, state: FSMContext):
     # Saving comment into database
 
     await leave_comment(message.from_user.id, message.text)
-    await message.answer("✅ Ваш комментарий был принят")
-    await message.answer("Для заказа нажмите 🛍 Заказать\n\nА также вы можете посмотреть акции и ознакомиться с местонахождением наших филиалов",reply_markup=start)
+    await message.answer("✅ Fikringiz qabul qilindi. ")
+    await message.answer("Buyurtma berish uchun 🍴Menyu tugmasini bosing \n\nShuningdek, siz aksiyalarni ko'rishingiz va filiallarimiz joylashuvi bilan tanishishingiz mumkin. ",reply_markup=start)
     await state.finish()
 
 
-@dp.message_handler(text="🏘 Филиалы", state="*")
+@dp.message_handler(text="🏘 Bizning filiallarimiz", state="*")
 async def branches_info(message: types.Message, state: FSMContext):
     # Showing all the branches of BBQ
 
-    await message.answer("Наши филиалы", reply_markup=branches)
+    await message.answer("Bizning filiallarimiz ", reply_markup=branches)
     await state.set_state(Others.branches)
 
 
-@dp.message_handler(text="📋 Мои заказы", state="*")
+@dp.message_handler(text="📋 Mening buyurtmalarim", state="*")
 async def providing_5_orders(message: types.Message):
     # Getting 5 last orders of a user
 
@@ -418,38 +422,34 @@ async def providing_5_orders(message: types.Message):
     
     if orders:
         for order in orders:
-            await dp.bot.send_message(message.chat.id, f"""Номер заказа: {order['id']}\nСтатус: *{order['order_status']}*
-Адрес: {order['order_address']}\n\n{order['order_items']}\n\nТип оплаты: *{order['payment_method']}*\n
-Итого: *{order['order_sum']}* UZS""", parse_mode='Markdown')
+            await dp.bot.send_message(message.chat.id, f"""Buyurtma raqami : {order['id']}\nHolat: *{order['status']}*
+Manzil: {order['address']}\n\n{order['items']}\n\nTo'lov turi: *{order['payment_method']}*\n
+Jami: *{order['sum']}* UZS""", parse_mode='Markdown')
     else:
-        await message.answer("Вы всё ещё ничего не заказали", reply_markup=main_menu)
+        await message.answer("Siz hali hech narsa buyurtma qilmadingiz ", reply_markup=main_menu)
 
 
-@dp.message_handler(text="ℹ️ О нас", state="*")
+@dp.message_handler(text="ℹ️ Biz haqimizda", state="*")
 async def about_bbq_button(message: types.Message):
-    # Providing info about BBQ Burger
+    # Providing info about 
 
     await message.answer_photo(photo=open("media/images/about.jpg", "rb"), caption='''
-"Barbeque Burger" - Это первый в Ташкенте бургер
-приготовленный на огне. Сочные котлеты приготовленные на огне в сочетании с отборными свежими овощами, создают
-неповторимый вкус Barbeque Burger. А наша круглосуточная
-доставка делает наши бургеры доступными в любое время.
-Заказать доставку вы можете по телефонам: +998(71) 200 62 62''', reply_markup=back)
+"Non kabob shurchi"-Non kabob shurchi boyicha eng Zo'r restaranlardan biri bu bot orqali yoki +998 99 311-5111 bu nomerlar orqali taomlarni buyurtma qilishingiz mumkin 😉''', reply_markup=back)
 
 
-@dp.message_handler(text="⚙️ Настройки", state="*")
+@dp.message_handler(text="⚙️ Sozlamalar", state="*")
 async def settings_options(message: types.Message, state: FSMContext):
     # Settings menu
 
-    await message.answer("Выберите настройку", reply_markup=settings)
+    await message.answer("Sozlamani tanlang", reply_markup=settings)
     await state.set_state(Others.settings)
 
 
-@dp.message_handler(text="Добавить день рождения",state=Others.settings)
+@dp.message_handler(text="Tug'ilgan kunni qo'shing",state=Others.settings)
 async def asking_for_birthday(message: types.Message, state: FSMContext):
     # Adding birthday option
 
-    await message.answer("Введите свой день рождения в формате, похожем на «26-04-1999»", reply_markup=main_menu)
+    await message.answer("Tug'ilgan kuningizni '26-04-1999' formatiga o'xshash formatda kiriting ", reply_markup=main_menu)
     await state.set_state(Others.birthday)
 
 
@@ -460,10 +460,10 @@ async def fixing_birthday(message: types.Message, state: FSMContext):
     date_pattern = "^[0-9]{1,2}\\-[0-9]{1,2}\\-[0-9]{4}$"
     match = re.match(date_pattern, message.text)
     if not match:
-        await message.answer("Неправильный ввод!!!")
-        return await message.answer("Введите свой день рождения в формате, похожем на «26-04-1999»")
+        await message.answer("Yaroqsiz kiritish !!!")
+        return await message.answer("Tug'ilgan kuningizni '26-04-1999' formatiga o'xshash formatda kiriting")
     else:
-        await message.answer("День рождения успешно добавлен.")
+        await message.answer("Tug'ilgan kun qo'shildi.")
         await put_birthday(message.from_user.id, message.text)
         await state.finish()
 

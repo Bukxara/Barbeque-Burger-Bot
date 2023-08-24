@@ -16,7 +16,10 @@ async def bot_start(message: types.Message, state: FSMContext):
 
     first_name, username, telegram_id = message.from_user.first_name, message.from_user.username, message.from_user.id
     await get_or_create_customer(first_name, username, telegram_id)
-    await message.answer("Здравствтуйте! Добро пожаловать в наш бот!\nПожалуйста введите свой номер телефона\n\nОтправить номер можете с помощью кнопки *Мой номер*",
+    await message.answer(f"""*Assalomu alaykum {message.from_user.first_name}!*
+Xush kelibsiz! Men FeedUp-ning rasmiy botiman.
+Bu yerda siz menyu bilan tanishishingiz va uyga buyurtma berishingiz mumkin!
+Botdan unumli foydalanish uchun *Mening raqamim* tugmasini bosing.""",
                          parse_mode="Markdown", reply_markup=contact)
     await state.set_state(Customer.phone)
     
