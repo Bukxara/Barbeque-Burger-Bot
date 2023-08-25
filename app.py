@@ -1,14 +1,14 @@
 from aiogram import executor
 
-from loader import dp, bot
+from loader import dp
 import middlewares, filters, handlers
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 from middlewares.throttling import ThrottlingMiddleware
 
 
-throttling_middleware = ThrottlingMiddleware(bot)
-dp.middleware.setup(throttling_middleware)
+# throttling_middleware = ThrottlingMiddleware()
+# dp.middleware.setup(throttling_middleware)
 
 async def on_startup(dispatcher):
     

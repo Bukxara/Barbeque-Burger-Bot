@@ -8,8 +8,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled
 
 class ThrottlingMiddleware(BaseMiddleware):
-    def __init__(self, bot, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
-        self.bot = bot  # Store the bot object
+    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
         self.rate_limit = limit
         self.prefix = key_prefix
         super(ThrottlingMiddleware, self).__init__()
@@ -17,7 +16,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     async def on_pre_process_message(self, message: types.Message, data: dict):
         current_time = datetime.now().time()
         if not self.is_working_hours(current_time):
-            await self.bot.send_message(message.chat.id, "Hozir men dam olmoqdaman 💤💤💤\nErtalab soat 10:00 dan ishga tushaman 😉😉😉")
+            await message.reply("Hozir men dam olmoqdaman 💤💤💤\nErtalab soat 10:00 dan ishga tushaman 😉😉😉")
             raise CancelHandler()
 
         handler = current_handler.get()
@@ -40,9 +39,15 @@ class ThrottlingMiddleware(BaseMiddleware):
 
     @staticmethod
     def is_working_hours(current_time):
-        start_time = time(10, 0)
-        end_time = time(3, 0)
+        start_time_morning = time(10, 0)
+        end_time_morning = time(23, 59)  # 11:59 PM
 
-        if start_time <= current_time or current_time <= end_time:
+        start_time_night = time(0, 0)  # 12:00 AM
+        end_time_night = time(3, 0)
+
+        if start_time_morning <= current_time <= end_time_morning:
+            return True
+        elif start_time_night <= current_time <= end_time_night:
             return True
         return False
+
